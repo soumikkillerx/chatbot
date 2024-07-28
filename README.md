@@ -40,4 +40,4 @@ Max Length: Maximum length of generated responses.
 Contributions are welcome! To contribute, open issues or submit pull requests. Your feedback and improvements are appreciated.
 
 📞 Contact
-For any questions or support, please contact your-soumikparida12345@gmail.com.
+For any questions or support, please contact soumikparida12345@gmail.com.
