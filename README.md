@@ -13,10 +13,16 @@ Replicate API Token (for accessing LLaMA3 model)  (using replicate app to access
 📜 Features
 Interactive Chat: Engage in conversation with the LLaMA3 chatbot.
 Model Selection: Choose between different LLaMA3 model variants.
+
 Adjust Parameters: Fine-tune the chatbot's behavior using temperature, top_p, and max_length sliders.
+
 Save & Clear Chat History: Download your chat history as a JSON file and clear it with a single click.
+
 User Feedback: Rate chatbot responses and provide feedback.
+
 Typing Indicator: Simulate typing to enhance the conversation experience.
+
+
 🛠 Configuration
 Modify the app.py file to adjust the chatbot's settings:
 
