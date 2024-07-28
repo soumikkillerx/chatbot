@@ -1,10 +1,9 @@
 import streamlit as st
 import replicate
 import os
-from datetime import datetime
 
 # App title
-st.set_page_config(page_title="🦙💬 Llama 2 Chatbot")
+st.set_page_config(page_title=" Llama 2 Chatbot")
 
 # Replicate Credentials
 with st.sidebar:
@@ -40,29 +39,28 @@ with st.sidebar:
     # Theme options
     theme = st.sidebar.selectbox('Choose Theme', ['Light', 'Dark'])
     if theme == 'Dark':
-        st.markdown('<style>body {background-color: #2E2E2E; color: #FFFFFF;}</style>', unsafe_allow_html=True)
+        st.markdown('<style>body {background-color: #2E2E2E; color: #FFFFFF;} .stButton > button {background-color: #333; color: #FFF;} .stTextInput input {background-color: #444; color: #FFF;} .stSelectbox select {background-color: #444; color: #FFF;} .stMarkdown {color: #FFF;}</style>', unsafe_allow_html=True)
     else:
-        st.markdown('<style>body {background-color: #FFFFFF; color: #000000;}</style>', unsafe_allow_html=True)
+        st.markdown('<style>body {background-color: #FFFFFF; color: #000000;} .stButton > button {background-color: #F0F0F0; color: #000;} .stTextInput input {background-color: #FFFFFF; color: #000;} .stSelectbox select {background-color: #FFFFFF; color: #000;} .stMarkdown {color: #000;}</style>', unsafe_allow_html=True)
 
 os.environ['REPLICATE_API_TOKEN'] = replicate_api
 
 # Store LLM generated responses
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?", "timestamp": datetime.now()}]
+    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
 
 # Display or clear chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        timestamp = message["timestamp"].strftime('%Y-%m-%d %H:%M:%S')
-        st.write(f"**{message['role'].capitalize()}** ({timestamp}): {message['content']}")
+        st.write(message["content"])
 
 def clear_chat_history():
-    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?", "timestamp": datetime.now()}]
+    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
 st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 # Function for generating LLaMA2 response
 def generate_llama2_response(prompt_input):
-    string_dialogue = "You are a helpful assistant. You do not respond as 'User' or pretend to be 'User'. You only respond once as 'Assistant'."
+    string_dialogue = f"You are a helpful assistant named {assistant_name}. You do not respond as 'User' or pretend to be 'User'. You only respond once as '{assistant_name}'."
     for dict_message in st.session_state.messages:
         if dict_message["role"] == "user":
             string_dialogue += f"User: {dict_message['content']}\n\n"
@@ -75,7 +73,7 @@ def generate_llama2_response(prompt_input):
 
 # User-provided prompt
 if prompt := st.chat_input(disabled=not replicate_api):
-    st.session_state.messages.append({"role": "user", "content": prompt, "timestamp": datetime.now()})
+    st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
@@ -90,6 +88,5 @@ if st.session_state.messages[-1]["role"] != "assistant":
                 full_response += item
                 placeholder.markdown(full_response)
             placeholder.markdown(full_response)
-    message = {"role": "assistant", "content": full_response, "timestamp": datetime.now()}
+    message = {"role": "assistant", "content": full_response}
     st.session_state.messages.append(message)
-
