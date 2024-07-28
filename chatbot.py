@@ -7,10 +7,9 @@ st.set_page_config(page_title=" Llama 2 Chatbot")
 
 # Replicate Credentials
 with st.sidebar:
-    st.title('🦙💬 Llama 2 Chatbot')
-
+    st.title('  Chatbot')
     if 'REPLICATE_API_TOKEN' in st.secrets:
-        st.success('API key already provided!', icon='✅')
+        st.success('API key already provided!')
         replicate_api = st.secrets['REPLICATE_API_TOKEN']
     else:
         replicate_api = st.text_input('Enter Replicate API token:', type='password')
@@ -29,24 +28,14 @@ with st.sidebar:
     else:
         llm = 'replicate/llama70b-v2-chat:e951f18578850b652510200860fc4ea62b3b16fac280f83ff32282f87bbd2e48'
     
-    temperature = st.sidebar.slider('Temperature', min_value=0.01, max_value=5.0, value=0.1, step=0.01)
-    top_p = st.sidebar.slider('Top P', min_value=0.01, max_value=1.0, value=0.9, step=0.01)
-    max_length = st.sidebar.slider('Max Length', min_value=64, max_value=4096, value=512, step=8)
-
-    # Customizable assistant name
-    assistant_name = st.sidebar.text_input("Assistant's Name", value="Assistant")
-
-    # Theme options
-    theme = st.sidebar.selectbox('Choose Theme', ['Light', 'Dark'])
-    if theme == 'Dark':
-        st.markdown('<style>body {background-color: #2E2E2E; color: #FFFFFF;} .stButton > button {background-color: #333; color: #FFF;} .stTextInput input {background-color: #444; color: #FFF;} .stSelectbox select {background-color: #444; color: #FFF;} .stMarkdown {color: #FFF;}</style>', unsafe_allow_html=True)
-    else:
-        st.markdown('<style>body {background-color: #FFFFFF; color: #000000;} .stButton > button {background-color: #F0F0F0; color: #000;} .stTextInput input {background-color: #FFFFFF; color: #000;} .stSelectbox select {background-color: #FFFFFF; color: #000;} .stMarkdown {color: #000;}</style>', unsafe_allow_html=True)
+    temperature = st.sidebar.slider('temperature', min_value=0.01, max_value=5.0, value=0.1, step=0.01)
+    top_p = st.sidebar.slider('top_p', min_value=0.01, max_value=1.0, value=0.9, step=0.01)
+    max_length = st.sidebar.slider('max_length', min_value=64, max_value=4096, value=512, step=8)
 
 os.environ['REPLICATE_API_TOKEN'] = replicate_api
 
 # Store LLM generated responses
-if "messages" not in st.session_state:
+if "messages" not in st.session_state.keys():
     st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
 
 # Display or clear chat messages
@@ -60,15 +49,15 @@ st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 # Function for generating LLaMA2 response
 def generate_llama2_response(prompt_input):
-    string_dialogue = f"You are a helpful assistant named {assistant_name}. You do not respond as 'User' or pretend to be 'User'. You only respond once as '{assistant_name}'."
+    string_dialogue = "You are a helpful assistant. You do not respond as 'User' or pretend to be 'User'. You only respond once as 'Assistant'."
     for dict_message in st.session_state.messages:
         if dict_message["role"] == "user":
-            string_dialogue += f"User: {dict_message['content']}\n\n"
+            string_dialogue += "User: " + dict_message["content"] + "\n\n"
         else:
-            string_dialogue += f"{assistant_name}: {dict_message['content']}\n\n"
+            string_dialogue += "Assistant: " + dict_message["content"] + "\n\n"
     output = replicate.run(llm, 
-                           input={"prompt": f"{string_dialogue} {prompt_input} {assistant_name}: ",
-                                  "temperature": temperature, "top_p": top_p, "max_length": max_length, "repetition_penalty": 1})
+                           input={"prompt": f"{string_dialogue} {prompt_input} Assistant: ",
+                                  "temperature":temperature, "top_p":top_p, "max_length":max_length, "repetition_penalty":1})
     return output
 
 # User-provided prompt
@@ -77,7 +66,7 @@ if prompt := st.chat_input(disabled=not replicate_api):
     with st.chat_message("user"):
         st.write(prompt)
 
-# Generate a new response if the last message is not from assistant
+# Generate a new response if last message is not from assistant
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
